@@ -13,6 +13,17 @@ public class DueDateCalculator {
 	private DueDateCalculator() {}
 	
 	public static Date calculateDueDate(Date submitDate, int time) throws ParseException {
+		if(submitDate == null) {
+			System.out.println("Please, add a submit date!");
+			return null;
+		}
+		if(time == 0) {
+			return submitDate;
+		}
+		if(time < 0) {
+			System.out.println("Please, add a positive turnaround time!");
+			return null;
+		}
 		Calendar startDateCalendar;
 		startDateCalendar = Calendar.getInstance();
 		startDateCalendar.setTime(submitDate);
