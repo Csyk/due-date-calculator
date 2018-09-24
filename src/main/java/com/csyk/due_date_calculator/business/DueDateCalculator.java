@@ -13,21 +13,20 @@ public class DueDateCalculator {
 	private DueDateCalculator() {}
 	
 	public static Date calculateDueDate(Date submitDate, int time) throws ParseException {
-		Calendar startCal;
+		Calendar startDateCalendar;
+		startDateCalendar = Calendar.getInstance();
+		startDateCalendar.setTime(submitDate);
 		Calendar endOfFirstDay;
-		startCal = Calendar.getInstance();
-		startCal.setTime(submitDate);
-		
 		endOfFirstDay = Calendar.getInstance();
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-		String dayOfSubmitDate = Integer.toString(startCal.get(Calendar.DAY_OF_MONTH));
-		String monthOfSubmitDate = Integer.toString(startCal.get(Calendar.MONTH) + 1);
-		String yearOfSubmitDate = Integer.toString(startCal.get(Calendar.YEAR));
-		String hourOfSubmitDate = Integer.toString(startCal.get(Calendar.HOUR_OF_DAY));
-		String minuteOfSubmitDate = Integer.toString(startCal.get(Calendar.MINUTE));
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Constant.dateFormat);
+		String dayOfSubmitDate = Integer.toString(startDateCalendar.get(Calendar.DAY_OF_MONTH));
+		String monthOfSubmitDate = Integer.toString(startDateCalendar.get(Calendar.MONTH) + 1);
+		String yearOfSubmitDate = Integer.toString(startDateCalendar.get(Calendar.YEAR));
+		String hourOfSubmitDate = Integer.toString(startDateCalendar.get(Calendar.HOUR_OF_DAY));
+		String minuteOfSubmitDate = Integer.toString(startDateCalendar.get(Calendar.MINUTE));
 		endOfFirstDay.setTime(simpleDateFormat.parse(dayOfSubmitDate + "/" + monthOfSubmitDate +
-				"/" + yearOfSubmitDate + " 17:00"));
-		long firstDayLeftover = endOfFirstDay.getTime().getTime() - startCal.getTime().getTime();
+				"/" + yearOfSubmitDate + " " + Constant.endOfWorkingHours));
+		long firstDayLeftover = endOfFirstDay.getTime().getTime() - startDateCalendar.getTime().getTime();
 		long reminder = Integer.toUnsignedLong(time) * Constant.oneHourInMilliSec - firstDayLeftover;
 		if(reminder <= 0) {
 			String hourOfDueDate = Integer.toString(Integer.valueOf(hourOfSubmitDate) + time);
@@ -47,20 +46,18 @@ public class DueDateCalculator {
 		Calendar calendar;
 		calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Constant.dateFormat);
 		String dayOfStartDate = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
 		String monthOfStartDate = Integer.toString(calendar.get(Calendar.MONTH) + 1);
 		String yearOfStartDate = Integer.toString(calendar.get(Calendar.YEAR));
 		calendar.setTime(simpleDateFormat.parse(dayOfStartDate + "/" + monthOfStartDate +
-				"/" + yearOfStartDate + " 09:00"));
+				"/" + yearOfStartDate + " " + Constant.startOfWorkingHours));
 		Date presentDate = calendar.getTime();
 		do {
-			long presentDateEpoch = presentDate.getTime() + (24 * Constant.oneHourInMilliSec);
+			long presentDateEpoch = presentDate.getTime() + (Constant.oneDayInMilliSec);
 			presentDate = new Date(presentDateEpoch);
 			calendar.setTime(presentDate);
 		}while(Arrays.asList(1, 7).contains(calendar.get(Calendar.DAY_OF_WEEK)));
 		return presentDate;
 	}
-	
-	//TODO: create calculateReminder, generateNewDate function
 }
